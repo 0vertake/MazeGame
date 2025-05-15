@@ -54,14 +54,15 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        system("cls");
+        Sleep(4);
+
         if (maze.isGameWon()) {
             maze.display();
             cout << "\nCestitamo, pobedili ste!" << endl;
             Sleep(3000);
             gameRunning = false;
         }
-        system("cls");
-        Sleep(4);
     }
 
     return 0;

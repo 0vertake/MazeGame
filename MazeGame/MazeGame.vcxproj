@@ -110,13 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\milos\Fakultet\Objektno Orijentisano Programiranje 2\MazeGame\MazeLayout</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\MazeLayout</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MazeLayout.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\milos\Fakultet\Objektno Orijentisano Programiranje 2\MazeGame\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MazeLayout.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\x64\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
