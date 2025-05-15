@@ -5,6 +5,7 @@ private:
     int x;
     int y;
     char cellType;
+    int id;
     bool wasVisited;
 
 public:
@@ -15,6 +16,8 @@ public:
     int getY() const;
     bool getWasVisited() const;
     void setWasVisited(bool visited);
+    int getId() const;
+    void setId(int id);
 
     Cell& operator=(char newType);
 
