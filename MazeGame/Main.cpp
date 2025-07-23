@@ -8,10 +8,16 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main() {
+    int rows;
+    int cols;
 
-    int rows = stoi(argv[1]);
-    int cols = stoi(argv[2]);
+    cout << "Broj redova lavirinta: ";
+    cin >> rows;
+
+    cout << "Broj kolona lavirinta: ";
+    cin >> cols;
+
     if (rows < 15 || cols < 15) {
         cout << "Broj redova i kolona mora biti preko 15" << endl;
         Sleep(1000);
