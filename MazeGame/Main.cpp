@@ -10,14 +10,20 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    int rows = stoi(argv[1]);
-    int cols = stoi(argv[2]);
+    int rows;
+    int cols;
+
+    cout << "Broj redova lavirinta: ";
+    cin >> rows;
+
+    cout << "Broj kolona lavirinta: ";
+    cin >> cols;
+
     if (rows < 15 || cols < 15) {
-        cout << "Broj redova i kolona mora biti preko 15" << endl;
+        cout << endl << "Broj redova i kolona mora biti preko 15";
         Sleep(1000);
         return 1;
     }
-
     MazeMatrix maze(rows, cols);
 
     char move;

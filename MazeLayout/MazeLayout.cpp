@@ -49,7 +49,7 @@ namespace layout {
         matrix[rows - 1][randomExitY] = 'I';
 
         // Nastaje problem, ako je broj redova ili kolona paran broj. Prethodni raspored 
-        // polja odvojenih zidovima nije savrsen - pretposlednji red ili kolona budu samo
+        // polja odvojenih zidovima nije koristan - pretposlednji red ili kolona budu samo
         // zidovi. Zbog ovoga nasumicno oznacavamo pola polja u tom redu ili koloni da bi ih
         // DFS algoritam posetio.
         if (rows % 2 == 0) {
@@ -210,81 +210,14 @@ namespace layout {
         int y = cell->getY();
         return x + x/2 + (y + 1) / 2;
     }
-
-    class DisjointSet {
-    private:
-        std::vector<int> parent;
-
-    public:
-        DisjointSet(int n);
-        int find(int x);
-        bool unionSets(int x, int y);
-    };
-
-    DisjointSet::DisjointSet(int n) {
-        parent.resize(n);
-
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    int DisjointSet::find(int x) {
-        if (parent[x] != x) {
-            parent[x] = find(parent[x]);
-        }
-        return parent[x];
-    }
-
-    bool DisjointSet::unionSets(int x, int y) {
-        int rootX = find(x);
-        int rootY = find(y);
-
-        if (rootX != rootY) {
-            parent[rootX] = parent[rootY];
-            return true;
-        }
-        return false;
-    }
-
-    Cell** Kruskal(Cell** matrix, int rows, int cols, int randomEntranceY, int randomExitY) {
-        int n = (rows - 1) * (cols - 1) / 2;
-        
-        DisjointSet DSet = DisjointSet(n);
-        std::vector<Cell*> edges;
-        for (int i = 1; i < rows - 1; i++) {
-            for (int j = 1; j < cols - 1; j++) {
-
-                if ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)) {
-                    edges.push_back(&matrix[i][j]);
-                }
-            }
-        }
-
-        while (edges.size() > 0) {
-            int randomIndex = RNG(0, edges.size() - 1);
-            Cell* edge = edges[randomIndex];
-            std::vector<Cell*> vertices = getNextCells(matrix, edge, rows, cols, false);
-            Cell* vertex1 = vertices[0];
-            Cell* vertex2 = vertices[1];
-
-            if (DSet.unionSets(vertex1->getId(), vertex2->getId())) {
-                *edge = '.';
-            }
-            edges.erase(edges.begin() + randomIndex);
-        }
-        return matrix;
-    }
-
-
+    
     Cell** initializeMatrix(int rows, int cols) {
         int randomEntranceY = RNG(1, cols - 2);
         int randomExitY = RNG(1, cols - 2);
 
         Cell** matrix;
         matrix = createMatrixGrid(rows, cols, randomEntranceY, randomExitY);
-        //matrix = pathFinder(matrix, rows, cols, randomEntranceY, randomExitY, true);
-        matrix = Kruskal(matrix, rows, cols, randomEntranceY, randomExitY);
+        matrix = pathFinder(matrix, rows, cols, randomEntranceY, randomExitY, true);
 
         int minotaurX, minotaurY;
         std::tie(minotaurX, minotaurY) = addMinotaur(matrix, rows, cols, randomEntranceY, randomExitY);
