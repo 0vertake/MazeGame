@@ -27,14 +27,6 @@ void Cell::setWasVisited(bool visited) {
     wasVisited = visited;
 }
 
-int Cell::getId() const {
-    return id;
-}
-
-void Cell::setId(int id) {
-    this->id = id;
-}
-
 Cell& Cell::operator=(char newType) {
     cellType = newType;
     return *this;

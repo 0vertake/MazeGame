@@ -21,19 +21,25 @@ namespace layout {
         return distribution(generator);
     }
 
-    Cell** createMatrixGrid(int rows, int cols) {
+    // Inicijalizuje matricu na kojoj ce pathFinder generisati lavirint i priprema je.
+    Cell** createMazeGrid(int rows, int cols) {
         Cell** matrix = new Cell * [rows];
 
-        // Deli matricu u polja odvojena zidovima, kako bi DFS algoritam napravio bolji lavirint.
-        int counter = 0;
+        // Deli matricu u polja odvojena zidovima, kako bi pathFinder mogao generisati lavirint.
+        // Primer:
+        // #########
+        // #.#.#.#.#
+        // #########
+        // #.#.#.#.#
+        // #########
+        // #.#.#.#.#
+        // #########
         for (int i = 0; i < rows; i++) {
             matrix[i] = new Cell[cols];
 
             for (int j = 0; j < cols; j++) {
                 if (i != 0 && j != 0 && i != rows - 1 && j != cols - 1 && i % 2 != 0 && j % 2 != 0) {
                     matrix[i][j] = Cell(i, j, '.');
-                    matrix[i][j].setId(counter);
-                    counter++;
                 }
                 else {
                     matrix[i][j] = Cell(i, j, '#');
@@ -51,7 +57,6 @@ namespace layout {
                 matrix[rows - 2][RNG(1, cols - 2)].setWasVisited(false);
             }
         }
-
         if (cols % 2 == 0) {
             for (int i = 0; i < rows / 2 - 2; i++) {
                 matrix[RNG(1, rows - 2)][cols - 2].setWasVisited(false);
@@ -61,8 +66,10 @@ namespace layout {
         return matrix;
     }
 
+    // Koristi se za generisanje lavirinta, ali i za proveru da li je moguce stici do izlaza.
+    // Funkcionise na osnovi DFS algoritma i radi ono sto mu kaze ime - pronalazi put.
     Cell** pathFinder(Cell** matrix, int rows, int cols, int startY, int endY, bool isPathGenerator) {
-        // Postavljanje pocetka za DFS Algoritam.
+        // Postavljanje pocetka (ulaz).
         int x = 1;
         int y = startY;
 
@@ -71,10 +78,10 @@ namespace layout {
 
         // DFS Algoritam.
         while (true) {
-            // Svi moguci Cell-ovi koje DFS moze da poseti iz trenutnog Cell-a.
+            // Svi moguci Cell-ovi koje pathFinder moze da poseti iz trenutnog Cell-a.
             std::vector<Cell*> nextCells = getNextCells(matrix, &matrix[x][y], rows, cols, isPathGenerator, endY);
 
-            // Ako nema narednih Cell-ova za DFS, vracamo se unazad dok ne nadjemo
+            // Ako nema narednih Cell-ova za pathFinder, vracamo se unazad dok ne nadjemo
             // Cell iz kog mozemo posetiti neposecen Cell.
             if (nextCells.size() == 0) {
                 for (int i = cellsVisited.size() - 1; i >= 0; i--) {
@@ -85,10 +92,10 @@ namespace layout {
                         break;
                     }
                     // Ako smo stigli do pocetka posecenih Cell-ova, znaci da nijedan
-                    // nema naredni Cell i da je DFS zavrsen.
+                    // nema naredni Cell i da je pathFinder zavrsio svoj posao.
                     if (i == 0) {
                         // Proverava da li se algoritam zavrsio, a nije stigao do kraja.
-                        // Ovo osigurava da je prolaz mogucan pored minotaura.
+                        // Ovo osigurava da je prolaz moguc pored minotaura.
                         if (!isPathGenerator && !matrix[rows - 2][endY].getWasVisited()) {
                             matrix[0][0] = 'X';
                         }
@@ -100,7 +107,7 @@ namespace layout {
             // Nasumicno biranje narednog Cell-a.
             Cell* nextCell = nextCells[RNG(0, nextCells.size() - 1)];
 
-            // Ako funkcija formira lavirint, onda "rusimo" zid.
+            // Ako pathFinder formira lavirint, onda "rusimo" zid.
             if (isPathGenerator) {
                 int betweenX = (nextCell->getX() - x) / 2;
                 int betweenY = (nextCell->getY() - y) / 2;
@@ -115,12 +122,14 @@ namespace layout {
         }
     }
 
+    // Nasumicno ubacivanje Minotaura u lavirint uz proveru da li je moguce stici do izlaza.
     std::tuple<int, int> addMinotaur(Cell** matrix, int rows, int cols, int startY, int endY) {
         int minotaurX;
         int minotaurY;
 
         while (true) {
-
+            // Postavlja sve prolaze (ne zidove) kao neposecena polja, kojim ce se
+            // pathFinder kretati.
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     if (matrix[i][j].getType() == '.') {
@@ -130,6 +139,7 @@ namespace layout {
             }
 
             while (true) {
+                // Nasumicna postavka minotaura u lavirint.
                 minotaurX = RNG(2, rows - 2);
                 minotaurY = RNG(1, cols - 2);
 
@@ -138,6 +148,8 @@ namespace layout {
                 }
             }
 
+            // Oznacuje sva polja oko minotaura kao da su posecena, sto brani
+            // pathFinder-u da prodje odmah pored njega.
             matrix[minotaurX][minotaurY].setWasVisited(true);
             matrix[minotaurX + 1][minotaurY].setWasVisited(true);
             matrix[minotaurX - 1][minotaurY].setWasVisited(true);
@@ -145,6 +157,8 @@ namespace layout {
             matrix[minotaurX][minotaurY - 1].setWasVisited(true);
             matrix = pathFinder(matrix, rows, cols, startY, endY, false);
 
+            // pathFinder ce postaviti X flag na prvi Cell, ako je nemoguce
+            // stici do cilja zbog minotaura.s
             if (matrix[0][0].getType() != 'X') {
                 break;
             }
@@ -186,7 +200,9 @@ namespace layout {
             diff = 1;
         }
 
+        // Nalazi sve moguce naredne Cell-ove u koloni (gore-dole).
         for (int i = x - diff; i <= x + diff; i++) {
+            // Dozvoljava da naredni Cell bude na poslednjom redu ako je tu izlaz.
             if ((i > 0 && i < rows - 1) || (i == rows - 1 && y == randomExitY)) {
                 if (!matrix[i][y].getWasVisited()) {
                     nextCells.push_back(&matrix[i][y]);
@@ -194,37 +210,36 @@ namespace layout {
             }
         }
 
+        // Nalazi sve moguce naredne Cell-ove u redu (levo-desno).
         for (int i = y - diff; i <= y + diff; i++) {
             if (i > 0 && i < cols - 1 && !matrix[x][i].getWasVisited()) {
                 nextCells.push_back(&matrix[x][i]);
-            }
+            }   
         }
 
         return nextCells;
     }
 
-    int Id(Cell* cell) {
-        int x = cell->getX();
-        int y = cell->getY();
-        return x + x/2 + (y + 1) / 2;
-    }
-    
-    Cell** initializeMatrix(int rows, int cols) {
+    // Stvara kompletan matrix lavirint za MazeMatrix.
+    Cell** generateMaze(int rows, int cols) {
         int randomEntranceY = RNG(1, cols - 2);
         int randomExitY = RNG(1, cols - 2);
 
-        Cell** matrix;
-        matrix = createMatrixGrid(rows, cols);
-        // Oznacava izlaz kao Cell koji treba da se poseti.
-        matrix[rows - 3][randomExitY].setWasVisited(false);
+        // Pocetni grid za pathFinder-a.
+        Cell** matrix = createMazeGrid(rows, cols);
+        // Oznacava izlaz kao Cell koji treba da se poseti i osigurava da je izlaz pristupacan.
+        matrix[rows - 2][randomExitY].setWasVisited(false);
+        matrix[rows - 2][randomExitY] = '.';
+        matrix[rows - 1][randomExitY].setWasVisited(false);
+        // pathFinder funkcionise kao PathGenerator da bi formirao lavirint.
         matrix = pathFinder(matrix, rows, cols, randomEntranceY, randomExitY, true);
 
         int minotaurX, minotaurY;
         std::tie(minotaurX, minotaurY) = addMinotaur(matrix, rows, cols, randomEntranceY, randomExitY);
         
+        // Upisuje robota, minotaura, ulaz, izlaz.
         matrix[0][randomEntranceY] = 'U';
         matrix[rows - 1][randomExitY] = 'I';
-        matrix[rows - 2][randomExitY] = '.';
         matrix[1][randomEntranceY] = 'R';
         matrix[minotaurX][minotaurY] = 'M';
 
