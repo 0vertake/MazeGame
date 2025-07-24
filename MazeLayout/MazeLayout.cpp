@@ -21,7 +21,7 @@ namespace layout {
         return distribution(generator);
     }
 
-    Cell** createMatrixGrid(int rows, int cols, int randomEntranceY, int randomExitY) {
+    Cell** createMatrixGrid(int rows, int cols) {
         Cell** matrix = new Cell * [rows];
 
         // Deli matricu u polja odvojena zidovima, kako bi DFS algoritam napravio bolji lavirint.
@@ -41,14 +41,6 @@ namespace layout {
                 }
             }
         }
-
-        // Nasumicno rasporedjuje ulaz.
-        matrix[0][randomEntranceY] = 'U';
-
-        // Nasumicno rasporedjuje izlaz i oznacava Cell iznad izlaza
-        // da nije posecen, kako bi put do izlaza bio moguc.
-        matrix[rows - 2][randomExitY].setWasVisited(false);
-        matrix[rows - 1][randomExitY] = 'I';
 
         // Nastaje problem, ako je broj redova ili kolona paran broj. Prethodni raspored 
         // polja odvojenih zidovima nije koristan - pretposlednji red ili kolona budu samo
@@ -80,13 +72,13 @@ namespace layout {
         // DFS Algoritam.
         while (true) {
             // Svi moguci Cell-ovi koje DFS moze da poseti iz trenutnog Cell-a.
-            std::vector<Cell*> nextCells = getNextCells(matrix, &matrix[x][y], rows, cols, isPathGenerator);
+            std::vector<Cell*> nextCells = getNextCells(matrix, &matrix[x][y], rows, cols, isPathGenerator, endY);
 
             // Ako nema narednih Cell-ova za DFS, vracamo se unazad dok ne nadjemo
             // Cell iz kog mozemo posetiti neposecen Cell.
             if (nextCells.size() == 0) {
                 for (int i = cellsVisited.size() - 1; i >= 0; i--) {
-                    nextCells = getNextCells(matrix, cellsVisited[i], rows, cols, isPathGenerator);
+                    nextCells = getNextCells(matrix, cellsVisited[i], rows, cols, isPathGenerator, endY);
                     x = cellsVisited[i]->getX();
                     y = cellsVisited[i]->getY();
                     if (nextCells.size() != 0) {
@@ -95,6 +87,8 @@ namespace layout {
                     // Ako smo stigli do pocetka posecenih Cell-ova, znaci da nijedan
                     // nema naredni Cell i da je DFS zavrsen.
                     if (i == 0) {
+                        // Proverava da li se algoritam zavrsio, a nije stigao do kraja.
+                        // Ovo osigurava da je prolaz mogucan pored minotaura.
                         if (!isPathGenerator && !matrix[rows - 2][endY].getWasVisited()) {
                             matrix[0][0] = 'X';
                         }
@@ -106,7 +100,7 @@ namespace layout {
             // Nasumicno biranje narednog Cell-a.
             Cell* nextCell = nextCells[RNG(0, nextCells.size() - 1)];
 
-            // Ako smo preskocili jedan Cell, i tu "rusimo" zid.
+            // Ako funkcija formira lavirint, onda "rusimo" zid.
             if (isPathGenerator) {
                 int betweenX = (nextCell->getX() - x) / 2;
                 int betweenY = (nextCell->getY() - y) / 2;
@@ -182,7 +176,7 @@ namespace layout {
     // Pronalazi moguce poteze za DFS algoritam u matrici. Potez je moguc, ako
     // Cell u pitanju nije posecen. Cell moze biti udaljen za jedan ili dva mesta
     // u bilo kom pravcu od startnog Cella.
-    std::vector<Cell*> getNextCells(Cell** matrix, Cell* startCell, int rows, int cols, bool isPathGenerator) {
+    std::vector<Cell*> getNextCells(Cell** matrix, Cell* startCell, int rows, int cols, bool isPathGenerator, int randomExitY) {
         std::vector<Cell*> nextCells;
         int x = startCell->getX();
         int y = startCell->getY();
@@ -193,8 +187,10 @@ namespace layout {
         }
 
         for (int i = x - diff; i <= x + diff; i++) {
-            if (i > 0 && i < rows - 1 && !matrix[i][y].getWasVisited()) {
-                nextCells.push_back(&matrix[i][y]);
+            if ((i > 0 && i < rows - 1) || (i == rows - 1 && y == randomExitY)) {
+                if (!matrix[i][y].getWasVisited()) {
+                    nextCells.push_back(&matrix[i][y]);
+                }
             }
         }
 
@@ -218,14 +214,20 @@ namespace layout {
         int randomExitY = RNG(1, cols - 2);
 
         Cell** matrix;
-        matrix = createMatrixGrid(rows, cols, randomEntranceY, randomExitY);
+        matrix = createMatrixGrid(rows, cols);
+        // Oznacava izlaz kao Cell koji treba da se poseti.
+        matrix[rows - 3][randomExitY].setWasVisited(false);
         matrix = pathFinder(matrix, rows, cols, randomEntranceY, randomExitY, true);
 
         int minotaurX, minotaurY;
         std::tie(minotaurX, minotaurY) = addMinotaur(matrix, rows, cols, randomEntranceY, randomExitY);
-
+        
+        matrix[0][randomEntranceY] = 'U';
+        matrix[rows - 1][randomExitY] = 'I';
+        matrix[rows - 2][randomExitY] = '.';
         matrix[1][randomEntranceY] = 'R';
         matrix[minotaurX][minotaurY] = 'M';
+
         return matrix;
     }
 
