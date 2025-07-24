@@ -10,26 +10,31 @@
 using namespace std;
 
 int main() {
-
     int rows;
     int cols;
+    int numberOfPowerUps;
 
     cout << "Broj redova lavirinta: ";
     cin >> rows;
 
     cout << "Broj kolona lavirinta: ";
-    cin >> cols; cout << endl;
+    cin >> cols;
 
     if (rows < 15 || cols < 15) {
         cout << "Broj redova i kolona mora biti preko 15";
         Sleep(1000);
         return 1;
     }
+
+    cout << "Broj predmeta u lavirintu: ";
+    cin >> numberOfPowerUps; cout << endl;
+
+    // Meri koliko je vremena trebalo da se lavirint izgenerise.
     auto start = chrono::high_resolution_clock::now();
-    MazeMatrix maze(rows, cols);
+    MazeMatrix maze(rows, cols, numberOfPowerUps);
     auto end = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "Lavirint kreiran za " << elapsed_time.count() << " milisekundi." << endl;
+    cout << "Lavirint kreiran za " << elapsed_time.count() << " milisekundi.\n\n";
 
     char move;
     bool gameRunning = true;
@@ -64,9 +69,12 @@ int main() {
                 (void)_getch();
             }
         }
-
-        maze.moveMinotaur();
-
+        else {
+            // Ako se robot pomerio, znaci da se pomera i minotaur.
+            maze.moveMinotaur();
+        }
+        // Upisuje entite u lavirint.
+        maze.updateEntities();
         system("cls");
         Sleep(4);
 
@@ -79,11 +87,10 @@ int main() {
 
         if (maze.isGameWon()) {
             maze.display();
-            cout << "\nCestitamo, pobedili ste!" << endl;
+            cout << "\Pobedili ste!" << endl;
             Sleep(3000);
             gameRunning = false;
         }
     }
-
     return 0;
 }
