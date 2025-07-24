@@ -4,6 +4,7 @@
 #include <iostream>
 #include <conio.h>
 #include <cstdlib>
+#include <chrono>
 #include <Windows.h>
 
 using namespace std;
@@ -17,14 +18,18 @@ int main(int argc, char* argv[]) {
     cin >> rows;
 
     cout << "Broj kolona lavirinta: ";
-    cin >> cols;
+    cin >> cols; cout << endl;
 
     if (rows < 15 || cols < 15) {
-        cout << endl << "Broj redova i kolona mora biti preko 15";
+        cout << "Broj redova i kolona mora biti preko 15";
         Sleep(1000);
         return 1;
     }
+    auto start = chrono::high_resolution_clock::now();
     MazeMatrix maze(rows, cols);
+    auto end = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::milliseconds>(end - start);
+    cout << "Lavirint kreiran za " << elapsed_time.count() << " milisekundi." << endl;
 
     char move;
     bool gameRunning = true;
