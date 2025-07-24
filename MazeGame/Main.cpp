@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main() {
 
     int rows;
     int cols;
@@ -65,8 +65,17 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        maze.moveMinotaur();
+
         system("cls");
         Sleep(4);
+
+        if (maze.isGameLost()) {
+            maze.display();
+            cout << "\Izgubili ste!" << endl;
+            Sleep(3000);
+            gameRunning = false;
+        }
 
         if (maze.isGameWon()) {
             maze.display();
