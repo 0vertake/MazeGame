@@ -149,7 +149,6 @@ void MazeMatrix::checkForPowerUp(int newX, int newY) {
     // Ako je robot stao na predmet, nasumicno odredjuje koji ce biti i aktivira ga.
     if (matrix[newX][newY].getType() == 'P') {
         int effectType = layout::RNG(0, 3);
-        effectType = 3;
         switch (effectType) {
         case 0: 
             activePowerUp = new Fog(); 
