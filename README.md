@@ -4,6 +4,8 @@
 
 ![C++](https://img.shields.io/badge/C%2B%2B-14-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
 
 *Escape procedurally generated mazes, collect power-ups, and outsmart your biggest threat – the Minotaur.*
 
@@ -22,18 +24,21 @@ Navigate through procedurally generated mazes while avoiding a dangerous Minotau
 ## ✨ Features
 
 ### 🗺️ Procedural Maze Generation
+
 - **DFS-based Algorithm**: Utilizes Depth-First Search with backtracking for maze generation
 - **Guaranteed Solvability**: Every maze has a valid path from entrance to exit
 - **Dynamic Sizing**: Configurable maze dimensions (minimum 15x15)
 - **Smart Exit Placement**: Ensures the exit is always reachable even with obstacles
 
 ### 🎯 Gameplay Mechanics
+
 - **Minotaur's Condition**: Minotaur is always positioned in the maze so that there is a way around it
 - **Strategic Power-Ups**: Four unique power-ups that alter gameplay dynamics
 - **Real-Time Updates**: Smooth console rendering without screen flickering
 - **Win/Lose Conditions**: Multiple outcome scenarios based on player performance
 
 ### 💎 Power-Up System
+
 | Power-Up | Effect | Duration |
 |----------|--------|----------|
 | ⚔️ **Sword** | Instantly defeats the Minotaur upon contact | 3 turns |
@@ -42,6 +47,7 @@ Navigate through procedurally generated mazes while avoiding a dangerous Minotau
 | 🌫️ **Fog of War** | Reduces visibility to a 3x3 area around the player | 3 turns |
 
 ### 🎨 Technical Highlights
+
 - **Custom Console Rendering**: Uses Windows Console API for flicker-free updates
 - **Memory Management**: Proper dynamic memory allocation and deallocation
 - **Modular Architecture**: Clean separation between game logic, rendering, and maze generation
@@ -207,6 +213,14 @@ The game has been tested with:
 - Game State Management
 
 ---
+## 📝 License
+This project is licensed under the MIT License.
+
+## 👤 Author
+**Miloš Jovanović**  
+🎓 Faculty of Technical Sciences, University of Novi Sad  
+🔗 [GitHub](https://github.com/0vertake)
+
 
 <div align="center">
 
