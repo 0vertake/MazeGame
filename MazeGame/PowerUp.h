@@ -3,7 +3,7 @@
 
 class PowerUp {
 protected:
-    int duration = 4; // Postavljeno na 4 zbog inicijalnog ticka kada igrac pokupi predmet.
+    int duration = 4; // Set to 4 because of the initial tick when the player picks up the item.
     bool active = false;
 
 public:

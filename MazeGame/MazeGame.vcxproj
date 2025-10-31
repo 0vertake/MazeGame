@@ -140,11 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MazeMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="GameLogic.h" />
     <ClInclude Include="PowerUps.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="MazeMatrix.h" />

@@ -18,7 +18,7 @@ private:
     int minotaurX;
     int minotaurY;
 
-    // Pokazivac na trenutni aktivni predmet.
+    // Pointer to the currently active power-up.
     PowerUp* activePowerUp = nullptr;
     
 public:

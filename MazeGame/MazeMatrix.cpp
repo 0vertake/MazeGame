@@ -12,13 +12,13 @@ MazeMatrix::MazeMatrix(int rows, int cols, int numberOfPowerUps) {
     this->rows = rows;
     this->cols = cols;
     matrix = layout::generateMaze(rows, cols);
-    robotX = 1; // Robot ce se uvek nalaziti u prvom redu.
+    robotX = 1; // Robot will always be in the first row.
     robotY = 0;
     isMinotaurAlive = true;
     minotaurX = 0;
     minotaurY = 0;
 
-    // Trazi robota i minotaura u izgenerisanom lavirintu i zapisuje njihove indekse.
+    // Searches for the robot and minotaur in the generated maze and records their indices.
     for (int i = 1; i < rows - 1; i++) {
         for (int j = 1; j < cols - 1; j++) {
             if (matrix[1][j].getType() == 'R') {
@@ -31,7 +31,7 @@ MazeMatrix::MazeMatrix(int rows, int cols, int numberOfPowerUps) {
         }
     }
 
-    // Ubacuje nasumicno predmete u lavirint
+    // Randomly places power-ups in the maze.
     for (int i = 0; i < numberOfPowerUps; i++) {
         int x, y;
         while (true) {
@@ -57,15 +57,15 @@ const Cell* MazeMatrix::operator[](int index) const {
 }
 
 void MazeMatrix::display() const {
-    // Prikazuje trenutni predmet.
+    // Displays the current power-up.
     if (activePowerUp) {
-        cout << "Trenutni predmet aktivan jos " << activePowerUp->getRemainingTurns() << " potez(a): " << activePowerUp->getName() << endl;
+        cout << "Current power-up active for " << activePowerUp->getRemainingTurns() << " more turn(s): " << activePowerUp->getName() << endl;
     }
-    // Prikaz lavirinta.
+    // Display the maze.
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            // Smanjuje vidljivost u slucaju magle rat.
-            if (activePowerUp && activePowerUp->getName() == "Magla rata") {
+            // Reduces visibility in case of fog of war.
+            if (activePowerUp && activePowerUp->getName() == "Fog of War") {
                 if (!(abs(i - robotX) < 2 && abs(j - robotY) < 2)) {
                     cout << ' ';
                     continue;
@@ -77,7 +77,7 @@ void MazeMatrix::display() const {
     }
 }
 
-// Upisuje entitete (robota i minotaura) u lavirint.
+// Writes entities (robot and minotaur) into the maze.
 void MazeMatrix::updateEntities() {
     matrix[robotX][robotY] = 'R';
     if (isMinotaurAlive) {
@@ -86,22 +86,22 @@ void MazeMatrix::updateEntities() {
 }
  
 bool MazeMatrix::isValidMove(int x, int y, bool isPlayer) const {
-    // Dozvoljava robotu da "probije" zid, jedino ako nije spoljasni.
-    if (isPlayer && x < rows - 1 && y < cols - 1 && activePowerUp && activePowerUp->getName() == "Cekic") {
+    // Allows the robot to "break through" a wall, only if it's not an outer wall.
+    if (isPlayer && x < rows - 1 && y < cols - 1 && activePowerUp && activePowerUp->getName() == "Hammer") {
         return true;
     }
-    // Ne dozvoljava minotauru da izadje iz lavirinta.
+    // Doesn't allow the minotaur to exit the maze.
     if (!isPlayer && matrix[x][y].getType() == 'I') {
         return false;
     }
-    // Ne dozvoljava nikome da prodje kroz zid ili da izadje kroz ulaz.
+    // Doesn't allow anyone to pass through a wall or exit through the entrance.
     if (matrix[x][y].getType() == '#' || matrix[x][y].getType() == 'U') {
         return false;
     }
     return true;
 }
 
-// Pomera robota na osnovu prosledjenog poteza i proverava da li je robot stao na predmet.
+// Moves the robot based on the provided move and checks if the robot stepped on a power-up.
 bool MazeMatrix::moveRobot(char move) {
     int newX = robotX;
     int newY = robotY;
@@ -127,10 +127,10 @@ bool MazeMatrix::moveRobot(char move) {
         return false;
     }
 
-    // Proverava da li je robot stao na predmet.
+    // Checks if the robot stepped on a power-up.
     checkForPowerUp(newX, newY);
 
-    // Ako jeste onda odbrojava poteze.
+    // If yes, then counts down the turns.
     if (activePowerUp) {
         activePowerUp->tick();
         if (!activePowerUp->isActive()) {
@@ -146,7 +146,7 @@ bool MazeMatrix::moveRobot(char move) {
 }
 
 void MazeMatrix::checkForPowerUp(int newX, int newY) {
-    // Ako je robot stao na predmet, nasumicno odredjuje koji ce biti i aktivira ga.
+    // If the robot stepped on a power-up, randomly determines which one it will be and activates it.
     if (matrix[newX][newY].getType() == 'P') {
         int effectType = layout::RNG(0, 3);
         switch (effectType) {
@@ -167,7 +167,7 @@ void MazeMatrix::checkForPowerUp(int newX, int newY) {
     }
 }
 
-// Pomera minotaura nasumicno.
+// Moves the minotaur randomly.
 void MazeMatrix::moveMinotaur() {
     if (!isMinotaurAlive) {
         return;
@@ -180,7 +180,7 @@ void MazeMatrix::moveMinotaur() {
         newX = minotaurX;
         newY = minotaurY;
 
-        // Nasumicno bira potez dok ne bude ispravan.
+        // Randomly chooses a move until it's valid.
         int randomDirection = layout::RNG(0, 3);
         switch (randomDirection) {
         case 0:
@@ -206,7 +206,7 @@ void MazeMatrix::moveMinotaur() {
     minotaurY = newY;
 }
 
-// Provera da li je robot pored minotaura kao na vizualizaciji:
+// Check if the robot is next to the minotaur as in the visualization:
 //    .
 //   .M.
 //    .
@@ -218,18 +218,18 @@ bool MazeMatrix::isRobotNextToMinotaur() const {
 }
 
 bool MazeMatrix::isGameLost() {
-    // Proverava da li minotaur moze da ubije robota.
+    // Checks if the minotaur can kill the robot.
     if (isRobotNextToMinotaur() && isMinotaurAlive) {
         if (activePowerUp) {
-            // Ako robot ima stit - ne moze da ga ubije minotaur.
-            if (activePowerUp->getName() == "Stit") {
+            // If the robot has a shield - the minotaur can't kill it.
+            if (activePowerUp->getName() == "Shield") {
                 return false;
             }
-            // Ako robot ima mac - automatski ubija minotaura.
-            if (activePowerUp->getName() == "Mac") {
+            // If the robot has a sword - it automatically kills the minotaur.
+            if (activePowerUp->getName() == "Sword") {
                 isMinotaurAlive = false;
                 matrix[minotaurX][minotaurY] = '.';
-                cout << "Ubili ste minotaura!" << endl;
+                cout << "You killed the minotaur!" << endl;
                 return false;
             }
         }

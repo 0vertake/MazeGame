@@ -3,20 +3,20 @@
 
 class Fog : public PowerUp {
 public:
-    std::string getName() const override { return "Magla rata"; }
+    std::string getName() const override { return "Fog of War"; }
 };
 
 class Sword : public PowerUp {
 public:
-    std::string getName() const override { return "Mac"; }
+    std::string getName() const override { return "Sword"; }
 };
 
 class Shield : public PowerUp {
 public:
-    std::string getName() const override { return "Stit"; }
+    std::string getName() const override { return "Shield"; }
 };
 
 class Hammer : public PowerUp {
 public:
-    std::string getName() const override { return "Cekic"; }
+    std::string getName() const override { return "Hammer"; }
 };
