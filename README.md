@@ -219,10 +219,7 @@ This project is licensed under the MIT License.
 ## 👤 Author
 **Miloš Jovanović**  
 🎓 Faculty of Technical Sciences, University of Novi Sad  
-🔗 [GitHub](https://github.com/0vertake)
-
-
-<div align="center">
+🔗 [GitHub](https://github.com/0vertake), [LinkedIn](https://www.linkedin.com/in/milos-jovanovic-se/)
 
 **⭐ Star this repository if you found it interesting!**
 
