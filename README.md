@@ -64,7 +64,7 @@ Navigate through procedurally generated mazes while avoiding a dangerous Minotau
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/MazeGame.git
+   git clone https://github.com/0vertake/MazeGame.git
    cd MazeGame
    ```
 2. **Open in Visual Studio**
